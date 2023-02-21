@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { Switch, Text } from "react-native";
+import { Button, Switch, Text } from "react-native";
 import Row from "./Row";
 
 function TodoItem( { label } ) {
@@ -11,9 +11,10 @@ function TodoItem( { label } ) {
             onValueChange={ value => setDone( value ) }
             style={{ marginRight: 8, }}
             />
-            <Text style={{ color: isDone ? '#eee' : '#000' }}>
+            <Text style={{ color: isDone ? '#eee' : '#000', flex: 1 }}>
                 { label ?? '(내용 없음)' }
             </Text>
+            <Button title="삭제" onPress={()=>{}}/>
         </Row>
     )
 }
