@@ -6,6 +6,7 @@ import TodoItem from './components/TodoItem';
 import Row from './components/Row';
 import Padding from './components/Padding';
 import AsyncStorage from '@react-native-async-storage/async-storage';
+import produce from Immer;
 
 function updateStorage( data ) {
   AsyncStorage.setItem( 'todo-list', JSON.stringify( data ) );
@@ -16,7 +17,12 @@ export default function App() {
   const [ inputText, setInputText ] = useState( '' );
 
   const addItem = useCallback( () => {
-    const newData = [ ...list, { key: new Date().toString(), content: inputText } ];
+    const item = {
+      key: new Date().toString(),
+      content: inputText,
+      isDone: false,
+    }
+    const newData = [ ...list, item ];
     setList( newData );
     updateStorage( newData );
     setInputText( '' );
@@ -27,6 +33,13 @@ export default function App() {
     setList( newData );
     updateStorage( newData );
   }, [ list ]);
+
+  const updateItem = useCallback( ( key, value ) => {
+    setList( produce( list, draft => {
+      const index = list.findIndex( item => item.key === key );
+      draft[ index ].isDone = value;
+    } ) );
+  }, [ list ]) ;
 
   useEffect(()=>{
     AsyncStorage.getItem( 'todo-list' ).then( rawData => {
@@ -46,8 +59,11 @@ export default function App() {
           data={ list }
           renderItem={ item => (
             <TodoItem
+              id={ item.item.key }
               label={ item.item.content }
-              onDelete={ () => removeItem( item.item.key ) }
+              isDone={ item.item.isDone }
+              onSwitchChange={ updateItem }
+              onDelete={ removeItem }
             />
           ) }
           style={{ flex: 1 }}
