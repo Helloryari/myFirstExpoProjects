@@ -12,7 +12,7 @@ function TodoItem( { label, onDelete } ) {
             style={{ marginRight: 8, }}
             />
             <Text style={{ color: isDone ? '#eee' : '#000', flex: 1 }}>
-                { label ?? '(내용 없음)' }
+                { label ?? '(내용 없음 2222)' }
             </Text>
             <Button title="삭제" onPress={ onDelete }/>
         </Row>
