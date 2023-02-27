@@ -2,7 +2,7 @@ import { StatusBar } from 'expo-status-bar';
 import React from 'react';
 import Constants from 'expo-constants';
 import { Platform, SafeAreaView, StyleSheet } from 'react-native';
-import TodoList from './Screens/TodoList';
+import TodoList from './screens/TodoList';
 
 export default function App() {
   return (
