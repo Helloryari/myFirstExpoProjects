@@ -3,11 +3,12 @@ import React from 'react';
 import Constants from 'expo-constants';
 import { Platform, SafeAreaView, StyleSheet } from 'react-native';
 import TodoList from './screens/TodoList';
+import ZipCodeFinder from './screens/ZipCodeFinder';
 
 export default function App() {
   return (
     <SafeAreaView style={ styles.container }>
-      <TodoList />
+      <ZipCodeFinder/>
       <StatusBar style="auto" />
     </SafeAreaView>
   );
