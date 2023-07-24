@@ -1,40 +1,39 @@
 import React, { useEffect, useState } from 'react';
 import axios from 'axios';
 import BoxOfficeItem from '../components/BoxOfficeItem';
+import useFetch, { prefetch } from '../components/net/useFetch';
+import Paragraph from '../components/ui/Paragraph';
+import { ActivityIndicator } from 'react-native';
 
 export default function BoxOffice() {
-    const [ranks, setRanks] = useState([]);
+    const url = 'https://www.kobis.or.kr/kobisopenapi/webservice/rest/boxoffice/searchDailyBoxOfficeList.json';
+    const { data, error } = useFetch(url, {
+        key: 'f9370293a9a6fc5eb217053c615ec857',
+        targetDt: '20230716',
+    });
+
     useEffect( () => {
-        const url = 'https://www.kobis.or.kr/kobisopenapi/webservice/rest/boxoffice/searchDailyBoxOfficeList.json';
-        axios.get( url, {
-            params: {
-                key: 'f9370293a9a6fc5eb217053c615ec857',
-                targetDt: '20230311',
-            },
-        })
-        .then( response => {
-            setRanks(response.data.boxOfficeResult.dailyBoxOfficeList);
-        })
-        .catch(function (error) {
-            if (error.response) {
-              // 요청이 이루어졌으며 서버가 2xx의 범위를 벗어나는 상태 코드로 응답했습니다.
-              console.log(error.response.data);
-              console.log(error.response.status);
-              console.log(error.response.headers);
+        if( !data ) return;
+        const ranks = data?.boxOfficeResult?.dailyBoxOfficeList || [];
+
+        ( async function() {
+            for( const rank of ranks ) {
+                await prefetch(
+                    'https://www.kobis.or.kr/kobisopenapi/webservice/rest/movie/searchMovieInfo.json',
+                    {
+                        key: 'f9370293a9a6fc5eb217053c615ec857',
+                        movieCd: rank.movieCd,
+                    },
+                );
             }
-            else if (error.request) {
-              // 요청이 이루어 졌으나 응답을 받지 못했습니다.
-              // `error.request`는 브라우저의 XMLHttpRequest 인스턴스 또는
-              // Node.js의 http.ClientRequest 인스턴스입니다.
-              console.log(error.request);
-            }
-            else {
-              // 오류를 발생시킨 요청을 설정하는 중에 문제가 발생했습니다.
-              console.log('Error', error.message);
-            }
-            console.log(error.config);
-          });
-    }, [] );
+        } )();
+    }, [data]);
+
+    if( error ) return <Paragraph>{JSON.stringify(error)}</Paragraph>;
+    if( !data ) return <ActivityIndicator />;
+
+    const ranks = data?.boxOfficeResult?.dailyBoxOfficeList || [];
+
     return (
         <>
             {ranks.map( item => (

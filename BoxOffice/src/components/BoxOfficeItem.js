@@ -1,8 +1,16 @@
-import React from 'react';
+import { useNavigation } from '@react-navigation/native';
+import React, { useCallback } from 'react';
+import { Pressable } from 'react-native';
 import Row from './Row';
 import Paragraph from './ui/Paragraph';
+import styled from 'styled-components/native';
+
+const Container = styled.View`
+    padding: 12px;
+`;
 
 export default function BoxOfficeItem({data}) {
+    const navigation = useNavigation();
     let intenIcon = '⏺️';
     const parsedRankInten = parseInt(data.rankInten, 10);
     if( parsedRankInten < 0 ) {
@@ -10,12 +18,20 @@ export default function BoxOfficeItem({data}) {
     } else if ( parsedRankInten > 0 ) {
         intenIcon = '🔼';
     }
+    const navigateMovieDetail = useCallback( () => {
+        //move
+        navigation.navigate( 'MovieDetail', {movieCd: data.movieCd} );
+    }, [navigation, data]);
     return (
-        <Row>
-            <Paragraph>{data.rank}</Paragraph>
-            <Paragraph>{intenIcon}{data.rankInten}</Paragraph>
-            <Paragraph>{data.movieNm}</Paragraph>
-            <Paragraph>{data.rankOldAndNew === 'NEW' ? '🆕' : '' }</Paragraph>
-        </Row>
+        <Pressable onPress={navigateMovieDetail}>
+            <Container>
+                <Row>
+                    <Paragraph>{data.rank}</Paragraph>
+                    <Paragraph>{intenIcon} {data.rankInten} </Paragraph>
+                    <Paragraph>{data.movieNm}</Paragraph>
+                    <Paragraph>{data.rankOldAndNew === 'NEW' ? '🆕' : '' }</Paragraph>
+                </Row>
+            </Container>
+        </Pressable>
     );
 }
